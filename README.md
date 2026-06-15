@@ -2,6 +2,46 @@
 
 Plateforme web intelligente de gestion du parc informatique et des affectations materielles.
 
+## Apercu de l'application
+
+### Dashboard premium
+
+![Dashboard ParcFlow](screenshots/dashboard.png)
+
+### Gestion des utilisateurs
+
+![Gestion des utilisateurs](screenshots/users.png)
+
+### Gestion des equipements
+
+![Gestion des equipements](screenshots/equipments.png)
+
+### Affectations materielles
+
+![Affectations materielles](screenshots/assignments.png)
+
+### Maintenance et tickets
+
+![Maintenance](screenshots/maintenance.png)
+
+### Kanban maintenance
+
+![Kanban maintenance](screenshots/kanban-board.png)
+
+### Notifications
+
+![Notifications](screenshots/notifications.png)
+
+### Rapports et analytics
+
+![Rapports](screenshots/reports.png)
+
+![Analytics](screenshots/analytics.png)
+
+### Experience mobile
+
+![Dashboard mobile](screenshots/dashboard-mobile.png)
+
 L'architecture officielle du projet est desormais **unique et coherente** :
 
 - `frontend/` : React + Vite + TailwindCSS
