@@ -1,0 +1,165 @@
+﻿\chapter{Architecture du système}
+\label{chap:architecture}
+
+\section{Vision globale}
+L'architecture retenue pour la plateforme suit une logique de séparation claire entre présentation, exposition des services, logique métier, persistance et services transverses. Ce choix est cohérent avec les recommandations de l'ingénierie logicielle moderne, qui privilégient la modularité, la maintenabilité et la capacité d'évolution \cite{pressman2014,sommerville2015}.
+
+La figure \ref{fig:system-architecture} présente la vue d'ensemble de la solution.
+
+\imagefigure{system-architecture.png}{Architecture globale de la plateforme}{fig:system-architecture}
+
+Cette architecture répond à plusieurs objectifs :
+\begin{itemize}
+  \item isoler la logique d'interface pour favoriser une expérience utilisateur fluide ;
+  \item centraliser les règles métier côté backend afin de maîtriser les flux critiques ;
+  \item assurer la cohérence transactionnelle des opérations liées aux équipements et aux affectations ;
+  \item préparer un déploiement industrialisable grâce aux conteneurs.
+\end{itemize}
+
+\section{Architecture frontend React}
+Le frontend a été structuré autour d'un socle React moderne, combinant routage, composants réutilisables, gestion d'état légère et client HTTP centralisé. L'organisation du code côté client s'articule autour des dossiers suivants :
+
+\begin{keybox}[Structure logique du frontend]
+\begin{itemize}
+  \item \texttt{app/} : shell applicatif, routes et garde des accès ;
+  \item \texttt{api/} : client Axios et intercepteurs ;
+  \item \texttt{components/} : bibliothèque de composants visuels réutilisables ;
+  \item \texttt{features/} : stores Zustand et logique transversale ;
+  \item \texttt{pages/} : écrans métier ;
+  \item \texttt{styles/} : fondation graphique, variables et styles globaux.
+\end{itemize}
+\end{keybox}
+
+L'arborescence observée dans le dépôt est cohérente avec une approche orientée domaine. Les composants de présentation sont réutilisables, tandis que les pages assemblent les données, les interactions et la navigation. Le fichier \texttt{router.jsx} structure les routes publiques et protégées, ce qui renforce la lisibilité de l'application.
+
+\subsection{Routage et protection des vues}
+Le routage est organisé autour de deux types de chemins :
+\begin{itemize}
+  \item des routes publiques, principalement la connexion et l'inscription ;
+  \item des routes protégées, accessibles uniquement après authentification.
+\end{itemize}
+
+Ce découpage permet de déléguer à l'interface une première barrière de navigation, tout en laissant au backend la responsabilité du contrôle d'accès réel. La complémentarité entre garde frontend et vérification serveur constitue un bon compromis entre expérience utilisateur et sécurité.
+
+\subsection{Gestion de l'état et expérience utilisateur}
+Le projet utilise Zustand pour stocker les informations de session, l'utilisateur courant et certains états d'interface. Ce choix est pertinent dans un projet de taille moyenne, car il limite la complexité tout en offrant une API simple et claire. La persistance partielle de l'état utilisateur améliore la continuité d'usage sans introduire la lourdeur d'une solution plus complexe.
+
+\begin{codeblock}[H]
+\caption{Gestion centralisée de l'authentification côté frontend}
+\lstinputlisting[style=academiclst,firstline=6,lastline=47]{\fileAuthStore}
+\end{codeblock}
+
+La cohérence entre le store d'authentification, les routes protégées et les appels API montre que l'architecture frontend a été pensée comme une surcouche cohérente plutôt que comme un simple ensemble d'écrans indépendants.
+
+\section{Architecture backend Spring Boot}
+Le backend repose sur Spring Boot 3 et adopte une structuration modulaire articulée autour des packages \texttt{config}, \texttt{controller}, \texttt{service}, \texttt{repository}, \texttt{entity}, \texttt{security}, \texttt{utils} et \texttt{websocket}. Cette structuration permet de distinguer clairement les responsabilités, conformément aux bonnes pratiques des architectures en couches \cite{fowler2002,springdocs}.
+
+Le backend assure plusieurs responsabilités majeures :
+\begin{enumerate}
+  \item l'exposition des API REST ;
+  \item l'orchestration des workflows métier ;
+  \item la gestion de la sécurité ;
+  \item l'intégration de PostgreSQL via JPA/Hibernate ;
+  \item la diffusion des événements temps réel ;
+  \item la production d'exports et de notifications.
+\end{enumerate}
+
+\subsection{Couche contrôleur}
+La couche contrôleur sert de façade d'entrée. Les routes observées dans le code couvrent les modules \texttt{auth}, \texttt{dashboard}, \texttt{users}, \texttt{equipments}, \texttt{assignments}, \texttt{material-requests}, \texttt{maintenances}, \texttt{notifications}, \texttt{références} et \texttt{reports}. Cette couverture montre que les services exposés sont directement alignés sur le périmètre fonctionnel identifié dans l'analyse des besoins.
+
+\subsection{Couche service}
+La couche service constitue le centre de gravité métier du système. Elle contient les traitements applicatifs liés aux demandes de matériel, aux affectations, aux maintenances, aux notifications, au reporting et à la sécurité. Le recours à cette couche permet d'éviter une logique trop riche dans les contrôleurs et favorise la réutilisabilité des règles métier.
+
+\subsection{Couche persistance}
+La persistance s'appuie sur Spring Data JPA et Hibernate. Les entités métier sont mappées vers PostgreSQL, ce qui permet de bénéficier à la fois d'un modèle relationnel robuste et d'une productivité élevée côté développement. La structuration par repositories simplifie les opérations de consultation et de mise à jour tout en gardant un niveau d'abstraction adapté.
+
+\section{Architecture PostgreSQL}
+PostgreSQL a été retenu comme SGBD relationnel principal en raison de sa robustesse, de sa conformité SQL, de sa bonne intégration avec l'écosystème Java/Spring et de ses capacités de gestion transactionnelle \cite{postgresdocs}. Dans ce projet, la base de données joue un rôle central dans :
+\begin{itemize}
+  \item le maintien de l'intégrité des affectations ;
+  \item la conservation de l'historique des opérations ;
+  \item la structuration des relations entre utilisateurs, équipements, tickets et maintenances ;
+  \item la production d'indicateurs fiables pour les tableaux de bord.
+\end{itemize}
+
+Le modèle de données est suffisamment riche pour supporter l'évolution de la plateforme, tout en restant compréhensible grâce à une segmentation par entités métier principales.
+
+\section{Architecture API REST}
+Les API REST constituent le point de jonction entre le frontend React et le backend Spring Boot. Elles suivent un style ressource cohérent :
+\begin{itemize}
+  \item \texttt{/api/auth} pour l'authentification ;
+  \item \texttt{/api/dashboard} pour les synthèses ;
+  \item \texttt{/api/users}, \texttt{/api/equipments}, \texttt{/api/assignments}, \texttt{/api/material-requests} et \texttt{/api/maintenances} pour les opérations métier ;
+  \item \texttt{/api/reports} pour les exports documentaires.
+\end{itemize}
+
+La structure de ces endpoints reflète une approche REST suffisamment claire pour un projet académique, tout en permettant une extension naturelle vers une API plus large. Le client HTTP utilisé côté React confirme cette logique.
+
+\begin{codeblock}[H]
+\caption{Client HTTP Axios et propagation du jeton d'accès}
+\lstinputlisting[style=academiclst]{\fileApiHttp}
+\end{codeblock}
+
+L'usage d'intercepteurs permet d'ajouter automatiquement le jeton d'accès et de gérer les cas d'expiration côté interface. Ce mécanisme réduit la duplication et centralisé les comportements transverses.
+
+\section{Architecture de sécurité}
+La sécurité représente un axe structurant de la plateforme. Elle ne se limite pas à l'authentification initiale, mais englobe le contrôle d'accès, la gestion des rôles, la protection des ressources, les politiques de sécurité HTTP et la traçabilité.
+
+\subsection{Authentification et autorisation}
+Le backend s'appuie sur Spring Security, un filtre JWT et un service de détails utilisateur pour protéger les routes internes. Le \textit{Security Filter Chain} permet de définir explicitement :
+\begin{itemize}
+  \item les routes publiques ;
+  \item les routes nécessitant une authentification ;
+  \item la politique de session stateless ;
+  \item les protections complémentaires comme CSP ou CORS.
+\end{itemize}
+
+\begin{codeblock}[H]
+\caption{Configuration de sécurité du backend}
+\lstinputlisting[style=academiclst,firstline=36,lastline=79]{\fileSecurityConfig}
+\end{codeblock}
+
+\subsection{Jetons JWT}
+Le projet utilise un access token et un refresh token. Le premier porte l'identité et les rôles du principal, tandis que le second sert au renouvellement sécurisé de session. Cette approche est adaptée aux architectures API-first et évite une dépendance forte à la session serveur \cite{owasp2021}.
+
+\begin{codeblock}[H]
+\caption{Génération des jetons JWT}
+\lstinputlisting[style=academiclst,firstline=28,lastline=86]{\fileJwtProvider}
+\end{codeblock}
+
+\subsection{Audit et sécurité transverse}
+Au-delà de l'authentification, la plateforme prévoit une logique d'audit et de journalisation. Cette dimension est essentielle pour un système manipulant des affectations matérielles, car elle permet de retracer les actions sensibles et de renforcer la responsabilité opérationnelle.
+
+\section{Architecture WebSocket}
+L'architecture temps réel repose sur WebSocket avec STOMP/SockJS. Elle permet de diffuser certains événements applicatifs sans rechargement systématique des pages, notamment les notifications liées aux affectations ou aux maintenances.
+
+\begin{codeblock}[H]
+\caption{Configuration WebSocket}
+\lstinputlisting[style=academiclst]{\fileWebSocketConfig}
+\end{codeblock}
+
+Cette intégration apporte un gain direct en réactivité et en qualité d'expérience, tout en restant compatible avec une architecture backend centralisée.
+
+\section{Architecture Docker}
+La stratégie de conteneurisation du projet vise à simplifier le démarrage, l'isolation des dépendances et la reproductibilité de l'environnement. Le service principal embarque l'application Spring Boot, tandis que PostgreSQL et Mailpit sont lancés comme services dédiés. Cette approche réduit l'écart entre environnement de développement et environnement de démonstration.
+
+\begin{methodbox}[Bénéfices de la conteneurisation]
+\begin{itemize}
+  \item standardisation de l'environnement d'exécution ;
+  \item simplification de l'installation locale ;
+  \item isolation des services techniques ;
+  \item préparation à une industrialisation plus avancée.
+\end{itemize}
+\end{methodbox}
+
+\section{Synthèse du chapitre}
+L'architecture du système montre une réelle cohérence entre les besoins métier et les choix techniques. Le frontend React fournit une expérience claire et modulaire, le backend Spring Boot centralise les règles métier et la sécurité, PostgreSQL garantit la solidité des données, tandis que Docker et WebSocket renforcent respectivement la portabilité et la réactivité du système. Le chapitre suivant approfondit l'un des piliers de cette architecture : la base de données.
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,117 @@
+﻿\chapter{Résultats et discussion}
+\label{chap:results}
+
+\section{Résultats obtenus}
+Le principal résultat du projet réside dans la mise à disposition d'une plateforme web cohérente, exécutable et visuellement aboutie, couvrant un périmètre métier significatif. L'application permet :
+\begin{itemize}
+  \item une authentification sécurisée ;
+  \item la consultation d'un dashboard structuré ;
+  \item la gestion des équipements ;
+  \item la consultation des utilisateurs ;
+  \item le suivi des affectations ;
+  \item la gestion des maintenances et tickets ;
+  \item la réception de notifications ;
+  \item l'accès à un module de rapports ;
+  \item la consultation d'une documentation API.
+\end{itemize}
+
+Le tableau \ref{tab:resultats-objectifs} met en relation les objectifs initiaux et leur niveau d'atteinte.
+
+\begin{table}[H]
+\centering
+\caption{Correspondance entre objectifs et résultats obtenus}
+\label{tab:resultats-objectifs}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{4.6cm}X>{\bfseries}p{2cm}}
+\toprule
+Objectif initial & Résultat obtenu & État \\
+\midrule
+Centraliser l'inventaire & module équipements accessible et intégré au dashboard & Atteint \\
+Structurer les affectations & workflow d'affectation et de restitution visible & Atteint \\
+Suivre la maintenance & vues maintenance, tickets et kanban disponibles & Atteint \\
+Sécuriser l'accès & JWT, rôles, filtres et routes protégées implémentés & Atteint \\
+Fournir des rapports & endpoints PDF/XLSX et module rapports disponibles & Atteint \\
+Améliorer l'expérience utilisateur & interface premium, responsive et cohérente & Atteint \\
+Industrialiser l'environnement & Dockerfile et Docker Compose fournis & Partiellement atteint \\
+Automatiser les tests de qualité & base de test existante mais limitée & À renforcer \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Avantages du système}
+Plusieurs avantages ressortent de l'analyse du produit final :
+\begin{enumerate}
+  \item \textbf{centralisation} : la plateforme regroupe des fonctions auparavant dispersées ;
+  \item \textbf{lisibilité} : l'état du parc devient plus facilement interprétable ;
+  \item \textbf{traçabilité} : les opérations sensibles peuvent être historisées ;
+  \item \textbf{modularité} : l'architecture permet l'ajout de nouveaux modules ;
+  \item \textbf{crédibilité visuelle} : l'application donne l'image d'un produit professionnel et non d'un simple prototype.
+\end{enumerate}
+
+\section{Analyse des performances observées}
+Sans disposer d'une campagne de benchmark exhaustive, plusieurs observations peuvent être formulées :
+\begin{itemize}
+  \item l'application démarre correctement avec sa base locale ;
+  \item les routes principales sont accessibles et utilisables ;
+  \item la navigation entre écrans reste fluide dans le contexte de démonstration ;
+  \item les principaux visuels et tableaux sont restitués sans surcharge excessive.
+\end{itemize}
+
+Ces résultats sont suffisants pour la cible du projet, même s'ils ne remplacent pas une qualification de production.
+
+\section{Difficultés rencontrées}
+Comme tout projet full-stack, cette réalisation a impliqué plusieurs défis :
+\begin{itemize}
+  \item articulation correcte entre logique frontend et logique backend ;
+  \item gestion de la sécurité JWT et des routes protégées ;
+  \item maintien de la cohérence des états métier ;
+  \item mise en forme d'une interface riche sans complexifier excessivement le code ;
+  \item préparation d'un environnement exécutable, reproductible et démontrable.
+\end{itemize}
+
+Ces difficultés sont typiques d'un projet d'ingénierie logiciel réaliste. Elles ont contribué à la valeur pédagogique de l'expérience, car elles obligent à dépasser une logique de simple implémentation isolée.
+
+\section{Limités du projet}
+L'état actuel du projet comporte plusieurs limites qu'il convient de reconnaître explicitement :
+\begin{enumerate}
+  \item la couverture de tests automatisés reste réduite ;
+  \item l'intégration continue n'est pas encore complètement industrialisée ;
+  \item certains services externes sont encore configurés pour la démonstration locale ;
+  \item la montée en charge n'a pas été formellement qualifiée ;
+  \item plusieurs modules pourraient bénéficier d'une profondeur fonctionnelle supplémentaire.
+\end{enumerate}
+
+Cette lecture critique ne diminue pas la qualité du projet ; elle en précise simplement le niveau de maturité actuel.
+
+\section{Perspectives futures}
+Les perspectives d'amélioration sont nombreuses et cohérentes avec l'architecture existante :
+\begin{itemize}
+  \item ajout d'un moteur d'analytics avancé avec tendances et prédictions ;
+  \item intégration d'un module de bons de sortie et de validation électronique ;
+  \item synchronisation avec des référentiels externes ou annuaires institutionnels ;
+  \item enrichissement des tests automatisés et du pipeline CI/CD ;
+  \item déploiement sur une infrastructure cloud avec supervision ;
+  \item amélioration des workflows de maintenance préventive et des alertes intelligentes.
+\end{itemize}
+
+\section{Discussion académique}
+D'un point de vue académique, le projet présente plusieurs qualités notables :
+\begin{itemize}
+  \item il croise analyse métier, architecture, sécurité, UI/UX et déploiement ;
+  \item il s'appuie sur des technologies actuelles et pertinentes ;
+  \item il aboutit à une application concrète, visible et démontrable ;
+  \item il révèle une démarche d'ingénierie au-delà du simple développement d'écrans.
+\end{itemize}
+
+La principale réserve concerne la profondeur encore limitée de la validation automatisée. Cette limite est néanmoins fréquente dans les projets de cette ampleur lorsqu'ils cherchent simultanément à couvrir large fonctionnel, design, backend et industrialisation.
+
+\section{Synthèse du chapitre}
+Les résultats obtenus confirment la pertinence du projet. La plateforme répond de manière satisfaisante aux objectifs principaux, tout en laissant apparaître des axes d'amélioration réalistes. Elle constitue une base sérieuse, techniquement cohérente et visuellement valorisante, adaptée à une présentation académique de niveau professionnel.
+
+
+
+
+
+
+
+
+

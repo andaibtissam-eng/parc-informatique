@@ -1,0 +1,85 @@
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+    session:
+      timeout: 30m
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/xml,text/plain,text/css,application/javascript
+
+spring:
+  application:
+    name: spring-parc-informatique
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/parc_informatique}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: 12
+      minimum-idle: 3
+      auto-commit: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 25
+        order_inserts: true
+        order_updates: true
+  thymeleaf:
+    cache: false
+    mode: HTML
+  messages:
+    basename: messages
+    encoding: UTF-8
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
+  jackson:
+    default-property-inclusion: non_null
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:false}
+          starttls:
+            enabled: ${MAIL_SMTP_STARTTLS:false}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+
+app:
+  jwt:
+    issuer: parc-informatique
+    access-token-expiration-minutes: ${JWT_ACCESS_EXPIRATION_MINUTES:30}
+    refresh-token-expiration-days: ${JWT_REFRESH_EXPIRATION_DAYS:7}
+    secret: ${JWT_SECRET:change-me-with-a-long-random-secret-key-please}
+  security:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:8080}
+  upload:
+    base-path: ${UPLOAD_BASE_PATH:uploads}
+  mail:
+    from: ${MAIL_FROM:no-reply@parc.local}
+    fail-on-error: ${MAIL_FAIL_ON_ERROR:false}
+  frontend-base-url: ${APP_BASE_URL:http://localhost:8080}

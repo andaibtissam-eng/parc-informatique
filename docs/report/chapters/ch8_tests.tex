@@ -1,0 +1,137 @@
+﻿\chapter{Tests et validation}
+\label{chap:tests}
+
+\section{Objectifs de la validation}
+La validation vise à démontrer que la plateforme fonctionne réellement dans les scénarios attendus, qu'elle respecte les règles métier et qu'elle peut soutenir une soutenance académique sérieuse. La stratégie retenue combine tests techniques, vérification fonctionnelle et smoke test multi-rôles.
+
+\section{Tests unitaires}
+Le dépôt contient un test de chargement du contexte Spring Boot.
+
+\begin{codeblock}[H]
+\caption{Test automatise de chargement du contexte Spring Boot}
+\lstinputlisting[style=academiclst]{\fileSpringTest}
+\end{codeblock}
+
+Ce test confirme au minimum l'intégrité du contexte applicatif et la cohérence des dépendances principales.
+
+\section{Tests d'integration}
+Les tests d'integration ont été menes a travers:
+\begin{itemize}
+  \item le build du frontend React;
+  \item le lancement de Spring Boot sur \texttt{http://localhost:8080};
+  \item les echanges réels avec PostgreSQL;
+  \item la consommation des endpoints depuis l'interface;
+  \item la consultation de Swagger/OpenAPI;
+  \item l'exécution du script \texttt{tools/smoke-test.ps1}.
+\end{itemize}
+
+\section{Tests API}
+Les endpoints principaux ont été vérifiés via l'interface, Swagger et des appels scripts. Le smoke test joue ici un rôle central car il enchaîne des opérations métier réelles:
+\begin{enumerate}
+  \item connexion administrateur;
+  \item inscription d'un employé et d'un technicien;
+  \item création de comptes opérationnels pour les parcours de test;
+  \item création d'un équipement;
+  \item création d'une demande de matériel par un employé bénéficiaire;
+  \item création et approbation d'une affectation;
+  \item déclaration d'une maintenance par un employé;
+  \item consultation du board par un technicien.
+\end{enumerate}
+
+\section{Tests sécurité}
+Le tableau \ref{tab:tests-securite} résume quelques cas significatifs.
+
+\begin{table}[H]
+\centering
+\caption{Exemples de validations sécurité}
+\label{tab:tests-securite}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{4cm}X>{\bfseries}p{2cm}}
+\toprule
+Scenario & Resultat attendu & Statut \\
+\midrule
+Accès à une route interne sans authentification & redirection vers la connexion ou reponse 401 côté API & Conforme \\
+Connexion avec identifiants validés & emission d'un contexte authentifie et accès aux modules autorisés & Conforme \\
+Inscription avec rôle administrateur & refus de la demande & Conforme \\
+Compte non vérifié ou non approuvé & refus de connexion & Conforme \\
+Affectation vers un compte non eligible & rejet côté backend & Conforme \\
+Maintenance employée sur un équipement non rattaché & rejet côté backend & Conforme \\
+Demande de matériel traitée par un utilisateur non habilité & rejet côté backend & Conforme \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Tests de performance}
+Le projet ne comporte pas de campagne de charge industrielle complète. En revanche, plusieurs observations qualitatives ont été retenues:
+\begin{itemize}
+  \item build frontend stable;
+  \item demarrage backend correct en environnement local;
+  \item chargement fluide des principales pages;
+  \item exécution rapide du smoke test multi-rôles.
+\end{itemize}
+
+\section{Validation fonctionnelle}
+Le tableau \ref{tab:validation-fonctionnelle} résume les validations principales.
+
+\begin{longtable}{p{4.5cm}p{7.5cm}p{2.2cm}}
+\caption{Validation fonctionnelle des scénarios principaux}\\
+\toprule
+\textbf{Scenario} & \textbf{Observation} & \textbf{Statut} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Scenario} & \textbf{Observation} & \textbf{Statut} \\
+\midrule
+\endhead
+Connexion administrateur & Le compte principal donne accès au dashboard et aux modules de gouvernance. & Valide \\
+Inscription métier & Un nouvel inscrit est créé en \texttt{PENDING\_VERIFICATION}. & Valide \\
+Gestion utilisateurs & L'administrateur peut filtrer, approuver, suspendre et changer les rôles. & Valide \\
+Ajout d'un équipement & La page React permet la création puis l'upload photo/PDF. & Valide \\
+Affectation & Une affectation peut être créée puis approuvée. & Valide \\
+Consultation employé & L'employé ne voit que ses propres affectations. & Valide \\
+Demande de matériel & L'employé peut envoyer une demande et l'administrateur peut la consulter puis la traiter. & Valide \\
+Demande de maintenance & L'employé peut ouvrir une maintenance sur son équipement affecté. & Valide \\
+Création intervention admin & L'administrateur peut créer une intervention depuis l'API maintenance, visible ensuite dans le suivi Kanban. & Valide \\
+Stabilité UI responsive & Les pages affectations, utilisateurs, équipements et Kanban conservent un défilement interne sans décalage global. & Valide \\
+Vue technicien & Le technicien consulte le board de maintenance. & Valide \\
+Documentation API & Swagger est accessible localement. & Valide \\
+\bottomrule
+\label{tab:validation-fonctionnelle}
+\end{longtable}
+
+\section{Validation utilisateur}
+Pour une soutenance, le parcours de démonstration recommande est le suivant:
+\begin{enumerate}
+  \item montrer l'écran d'inscription et le choix de rôle métier;
+  \item expliquer que l'administrateur principal est unique;
+  \item se connecter en administrateur;
+  \item approuver ou créer un compte opérationnel;
+  \item ajouter un équipement avec photo réelle;
+  \item se connecter en employé et déposer une demande de matériel;
+  \item revenir en administrateur pour valider ou rejeter cette demande;
+  \item créer une affectation pour un employé;
+  \item se connecter en employé pour montrer la consultation et la déclaration de panne;
+  \item terminer par la vue technicien et le dashboard.
+\end{enumerate}
+
+\section{Limités de la stratégie actuelle}
+La validation actuelle reste perfectible:
+\begin{itemize}
+  \item la couverture unitaire demeure faible;
+  \item le smoke test vérifié les parcours critiques mais pas tous les cas limites;
+  \item aucune campagne de charge n'a été industrialisee;
+  \item le pipeline CI/CD n'automatise pas encore l'ensemble des vérifications.
+\end{itemize}
+
+\section{Synthèse du chapitre}
+Les tests menés montrent que l'application est exécutable, cohérente et démontrable. Les corrections apportées en fin de projet ont été revalidées par build frontend, compilation backend, test API de demande de matériel et vérification des routes principales. Le test Spring complet reste limité par un problème local Mockito/ByteBuddy d'attachement d'agent JVM, sans bloquer la compilation applicative. Cette base est suffisante pour une soutenance solide tout en laissant une marge d'amélioration vers une qualité plus industrielle.
+
+La dernière vérification réalisée a confirme les points suivants: \texttt{npm run build} reussit, le packaging Spring Boot avec \texttt{-DskipTests} reussit, les routes \texttt{/login}, \texttt{/assignments} et \texttt{/board} repondent en HTTP 200, une demande de matériel employé est créée en \texttt{PENDING}, puis elle est validée par l'administrateur en \texttt{APPROVED}. Une intervention admin a également été créée pour confirmer le fonctionnement du module maintenance.
+
+
+
+
+
+
+
+
+

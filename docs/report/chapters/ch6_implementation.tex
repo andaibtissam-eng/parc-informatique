@@ -1,0 +1,171 @@
+﻿\chapter{Réalisation et développement}
+\label{chap:implementation}
+
+\section{Introduction}
+La réalisation a consisté à transformer les choix fonctionnels et architecturaux en composants exécutables, maintenables et démontrables. Le projet final repose sur une architecture propre à deux grands blocs: un frontend React/Vite/TailwindCSS et un backend Spring Boot sécurisé par JWT, tous deux reliés à PostgreSQL.
+
+\section{Développement frontend React}
+\subsection{Structure de l'interface}
+Le frontend React porte l'ensemble de l'expérience utilisateur. Il gère la navigation, les tableaux, les formulaires, les cartes KPI et les états d'interface. L'architecture retenue suit une organisation modulaire:
+\begin{itemize}
+  \item \texttt{components/} pour les briques réutilisables;
+  \item \texttt{pages/} pour les vues métier;
+  \item \texttt{features/} pour les slices fonctionnelles comme l'authentification;
+  \item \texttt{api/} pour le client HTTP;
+  \item \texttt{app/} pour le routeur et l'assemblage global.
+\end{itemize}
+
+\subsection{Composants réutilisables}
+Plusieurs composants structurants ont été factorises:
+\begin{itemize}
+  \item \texttt{PageHeader} pour les en-têtes fonctionnels;
+  \item \texttt{DataTable} pour les tableaux modernes;
+  \item \texttt{StatCard} pour les indicateurs;
+  \item \texttt{StatusBadge} pour les états métier;
+  \item \texttt{SectionCard} pour la segmentation des contenus.
+\end{itemize}
+
+Une correction UI importante a porte sur les composants \texttt{SectionCard} et \texttt{DataTable}. Les sections acceptent maintenant correctement les contraintes de largeur dans les grilles React, tandis que les tableaux gèrent leur propre défilement horizontal. Cette correction évite que le contenu du board ou des registres ne pousse toute la page vers la droite.
+
+Une seconde correction a concerne les pages dont les formulaires etaient trop comprimes. Les modules \texttt{EquipmentsPage}, \texttt{UsersPage}, \texttt{AssignmentsPage} et \texttt{MaintenancePage} utilisent maintenant des grilles plus progressives, avec empilement sur écran moyen, largeur minimale raisonnable pour les tableaux et formulaire d'action prioritaire place avant les informations secondaires lorsque le profil est employé bénéficiaire.
+
+\subsection{Evolution récente de l'écran Équipements}
+La page React des équipements a été finalisée tard dans le projet afin de passer d'une vue de consultation à un vrai module de gestion. Elle permet maintenant:
+\begin{itemize}
+  \item la création d'un équipement depuis l'interface;
+  \item la mise à jour d'une fiche existante;
+  \item le choix des références métier (catégorie, fournisseur, localisation, departement);
+  \item le téléversement d'une photo réelle;
+  \item le téléversement d'un document PDF associe.
+\end{itemize}
+
+\subsection{Evolution récente de l'écran Affectations}
+La page des affectations a été enrichie pour couvrir le besoin du bénéficiaire. Un employé peut maintenant déposer une demande de matériel avec un type, un modèle souhaité, une priorité et une justification. Les administrateurs et responsables informatiques consultent ces demandes dans la même zone opérationnelle et peuvent les valider ou les rejeter avant de procéder à une affectation effective.
+
+\subsection{Exemple d'implémentation du dashboard}
+Le dashboard reste l'écran de pilotage le plus representatif.
+
+\begin{codeblock}[H]
+\caption{Implémentation de la page Dashboard en React}
+\lstinputlisting[style=academiclst,firstline=14,lastline=72]{\fileDashboardPage}
+\end{codeblock}
+
+\section{Architecture React}
+L'architecture frontend combine un routeur protégé, un store Zustand et un client Axios. Cette combinaison permet de centraliser la session, de propager le jeton d'accès et de cacher la complexité réseau derrière des appels simples. L'écran \texttt{LoginPage.jsx} joue un rôle particulier car il expose à la fois la connexion et l'inscription métier, avec une explication claire du rôle \enquote{Employé / bénéficiaire}.
+
+\section{Développement backend Spring Boot}
+\subsection{Organisation generale}
+Le backend Spring Boot 3 structure l'application autour des couches suivantes:
+\begin{itemize}
+  \item \texttt{controller} pour les points d'entrée REST;
+  \item \texttt{service} pour les règles métier;
+  \item \texttt{repository} pour l'accès aux données;
+  \item \texttt{entity} et \texttt{dto} pour le modèle;
+  \item \texttt{security} et \texttt{config} pour l'authentification, l'autorisation et l'infrastructure.
+\end{itemize}
+
+\subsection{Corrections métier appliquées}
+Durant la phase finale, plusieurs ajustements critiques ont été apportes:
+\begin{itemize}
+  \item normalisation des alias de rôles, afin de mapper \texttt{BENEFICIAIRE} vers le rôle canonique \texttt{EMPLOYE};
+  \item passage obligatoire des nouveaux inscrits par \texttt{PENDING\_VERIFICATION} puis \texttt{PENDING\_APPROVAL};
+  \item filtrage des références pour ne proposer que des utilisateurs actifs, vérifiés et approuvés;
+  \item vérification serveur de l'eligibilite d'un employé cible avant création d'une affectation;
+  \item création d'un module \texttt{MaterialRequest} pour enregistrer et traiter les demandes de matériel;
+  \item vérification serveur des maintenances déclarées par un employé, limitées à ses propres équipements affectés;
+  \item journalisation plus explicite des erreurs non gèrees pour accelerer le debogage.
+\end{itemize}
+
+\section{Authentification JWT}
+L'authentification repose sur un access token JWT et un refresh token. L'accès aux routes internes dépend:
+\begin{itemize}
+  \item de la validite cryptographique du jeton;
+  \item du rôle et des permissions associees au compte;
+  \item du statut du compte utilisateur;
+  \item de la vérification prealable de l'adresse e-mail.
+\end{itemize}
+
+Le circuit d'accès final est donc plus riche qu'une simple vérification d'identifiants. Un compte peut exister mais rester bloque tant qu'il n'est pas vérifié puis approuvé.
+
+\section{API REST}
+Les ressources structurantes exposées par l'API sont notamment:
+\begin{itemize}
+  \item \texttt{/api/auth/*} pour l'accès;
+  \item \texttt{/api/users} pour l'administration des comptes;
+  \item \texttt{/api/equipments} pour l'inventaire et l'upload de fichiers;
+  \item \texttt{/api/assignments} pour les workflows de dotation;
+  \item \texttt{/api/material-requests} pour les demandes de matériel avant affectation;
+  \item \texttt{/api/maintenances} pour les interventions;
+  \item \texttt{/api/références} pour alimenter les listes de sélection React;
+  \item \texttt{/api/reports/*} pour les exports.
+\end{itemize}
+
+Cette nomenclature rend l'API lisible et alignee avec le vocabulaire métier.
+
+\section{WebSocket et notifications temps réel}
+Le temps réel repose sur WebSocket avec STOMP/SockJS. Il est utilise pour diffuser les notifications liees aux affectations, aux maintenances et aux evenements de gouvernance. Cette couche amélioré la perception de reactivité sans surcharger le frontend par des interrogations constantes.
+
+\section{Gestion des états}
+La gestion des états se lit a deux niveaux:
+\begin{enumerate}
+  \item les états d'interface React: chargement, succes, erreur, edition;
+  \item les états métier backend: utilisateur, équipement, affectation, maintenance et ticket.
+\end{enumerate}
+
+L'un des apports majeurs des corrections finales a justement été de faire respecter ces états par le serveur. Ainsi, une maintenance employée sur un mauvais équipement ou une affectation vers un compte non éligible est maintenant refusées. De la même manière, une demande de matériel est créée à l'état \texttt{PENDING}, puis évolue uniquement après décision d'un acteur habilité.
+
+\section{Sécurité applicative}
+La sécurité applicative combine:
+\begin{itemize}
+  \item Spring Security;
+  \item JWT et refresh tokens;
+  \item hachage BCrypt;
+  \item CSRF adapte;
+  \item filtres de limitation;
+  \item RBAC base sur les permissions;
+  \item journaux d'activité et d'audit.
+\end{itemize}
+
+Ce dispositif renforce la credibilite du projet en tant qu'application SaaS d'entreprise.
+
+\section{Dockerisation}
+La dockerisation a été maintenue sur l'architecture finale \texttt{frontend/back\-end/database/docker}. Le backend sert les assets React compilés, tandis que PostgreSQL conserve les données métier et que le stockage des uploads est configurable via \texttt{UPLOAD\_BASE\_PATH}.
+
+\begin{codeblock}[H]
+\caption{Dockerfile de l'application Spring Boot}
+\lstinputlisting[style=academiclst]{\fileDockerfile}
+\end{codeblock}
+
+\section{Structures des dossiers}
+La structure finale du projet est la suivante:
+\begin{itemize}
+  \item \texttt{frontend/} pour le client React;
+  \item \texttt{backend/} pour Spring Boot;
+  \item \texttt{database/} pour les scripts PostgreSQL;
+  \item \texttt{docker/} pour les configurations de conteneurisation;
+  \item \texttt{docs/report/} pour la documentation technique et académique;
+  \item \texttt{tools/} pour les scripts de support et de validation.
+\end{itemize}
+
+\section{Bonnes pratiques utilisees}
+Les bonnes pratiques observées dans la réalisation incluent:
+\begin{itemize}
+  \item séparation explicite des couches;
+  \item distinction entre entités et DTOs;
+  \item centralisation de la sécurité;
+  \item composants UI réutilisables;
+  \item validation backend et frontend;
+  \item smoke test multi-rôles reproductible.
+\end{itemize}
+
+\section{Synthèse du chapitre}
+La réalisation finale montre une articulation cohérente entre expérience utilisateur, logique métier et sécurité. Les corrections tardives n'ont pas seulement amélioré l'interface: elles ont rendu le backend plus strict, le rôle \enquote{Employé / bénéficiaire} plus clair, et les modules critiques, notamment l'inventaire, la demande de matériel, l'affectation et la maintenance, effectivement opérationnels.
+
+
+
+
+
+
+
+
+

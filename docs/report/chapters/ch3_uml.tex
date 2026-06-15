@@ -1,0 +1,60 @@
+﻿\chapter{Modélisation UML}
+\label{chap:uml}
+
+\section{Role de la modélisation dans le projet}
+La modélisation UML sert d'interface entre l'analyse des besoins et la conception technique. Elle permet de rendre visibles les acteurs, les objets métier, les enchaînements de traitements et les contraintes de transition. Dans ce projet, elle a été utile pour structurer le contrôle d'accès par rôles, les workflows de demande de matériel, d'affectation, de maintenance et les interactions entre React, Spring Boot et PostgreSQL.
+
+\section{Diagramme de cas d'utilisation}
+Le diagramme de cas d'utilisation présente en figure \ref{fig:usecase} synthetise la vision fonctionnelle du système. Il distingue les responsabilités de l'administrateur, du responsable informatique, du technicien et de l'employé bénéficiaire.
+
+\imagefigure{uml-usecase.png}{Diagramme de cas d'utilisation de la plateforme}{fig:usecase}
+
+Le diagramme montre que l'administrateur dispose d'un périmètre transverse couvrant la gouvernance des comptes, les rôles, les permissions, les journaux d'audit et les rapports. Le responsable informatique reste centre sur l'inventaire, les demandes de matériel et les affectations. Le technicien intervient principalement sur les tickets et les maintenances. L'employé bénéficiaire consulte ses équipements, demande un matériel, declare une panne et suit ses notifications.
+
+\section{Diagramme de classes}
+Le diagramme de classes met en évidence les agregats centraux du domaine et leurs relations principales.
+
+\imagefigure{uml-class.png}{Diagramme de classes du domaine métier}{fig:class}
+
+Les classes \texttt{User}, \texttt{Role} et \texttt{Permission} forment le noyau de sécurité. Les classes \texttt{Equipment}, \texttt{Assignment}, \texttt{MaterialRequest}, \texttt{Maintenance} et \texttt{Ticket} portent la logique métier principale. Enfin, \texttt{Notification}, \texttt{RefreshToken} et \texttt{AuditLog} assurent la session, la diffusion d'information et la traçabilité.
+
+\section{Diagramme de sequence}
+Le diagramme de sequence en figure \ref{fig:sequence} decrit le scénario complet de demande puis d'affectation de matériel. Il couvre l'authentification, la création d'une demande par l'employé bénéficiaire, le traitement par l'administrateur ou le responsable informatique, puis la création de l'affectation.
+
+\imagefigure{uml-sequence.png}{Diagramme de séquence : demande et affectation de matériel}{fig:sequence}
+
+Ce scénario met en lumiere plusieurs validations critiques: contrôle de l'authentification JWT, persistance de la demande à l'état \texttt{PENDING}, notification des responsables, journalisation par audit log, recherche des équipements disponibles, création d'une affectation et notification finale du bénéficiaire.
+
+\section{Diagramme d'activité}
+Le diagramme d'activité présente le fonctionnement global de la plateforme par couloirs de responsabilité. Il permet de comprendre comment chaque acteur participe au cycle de vie du parc informatique.
+
+\imagefigure{uml-activity.png}{Diagramme d'activité global de la plateforme}{fig:activity}
+
+Cette vue confirme la cohérence du système: l'employé formule ses besoins et declare les pannes, le responsable traite les demandes et coordonne les affectations, le technicien prend en charge les tickets, le système gère les sessions, les notifications, les sauvegardes et les rapports, tandis que l'administrateur pilote la gouvernance et l'audit.
+
+\section{Diagramme d'états et transitions}
+Le diagramme d'états regroupe les cycles de vie essentiels: compte utilisateur, équipement, demande de matériel, affectation et ticket/intervention.
+
+\imagefigure{uml-state.png}{Diagramme d'états-transition du parc informatique}{fig:state}
+
+Cette modélisation a servi de base aux garde-fous implémentés côté serveur. Un compte doit être valide avant de devenir actif, une demande de matériel passe par un état \texttt{PENDING} avant décision, un équipement en maintenance devient indisponible, une affectation suit un circuit de validation, et une intervention progresse de \texttt{OPEN} vers \texttt{IN\_PROGRESS}, \texttt{RESOLVED} puis \texttt{CLOSED}.
+
+\section{Apport de la modélisation UML}
+La modélisation n'a pas été produite comme un simple livrable documentaire. Elle a soutenu trois objectifs concrets:
+\begin{enumerate}
+  \item clarifier la repartition des responsabilités entre acteurs;
+  \item relier les règles métier aux objets du domaine;
+  \item justifier les choix d'architecture, de sécurité et de workflow.
+\end{enumerate}
+
+\section{Synthèse du chapitre}
+Les diagrammes UML montrent que la plateforme a été pensee comme un système métier cohérent. Ils preparent directement laucture de l'architecture logicielle en expliquant pourquoi certaines validations doivent vivre dans le backend, notamment pour l'inscription, la demande de matériel, l'affectation, la maintenance, les notifications et l'audit.
+
+
+
+
+
+
+
+
+

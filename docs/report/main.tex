@@ -1,0 +1,567 @@
+﻿\documentclass[12pt,a4paper,oneside]{report}
+
+\ifdefined\pdfcompresslevel
+  \pdfcompresslevel=9
+\fi
+\ifdefined\pdfobjcompresslevel
+  \pdfobjcompresslevel=3
+\fi
+\ifdefined\pdfminorversion
+  \pdfminorversion=7
+\fi
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french,english]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{colortbl}
+\usepackage{ragged2e}
+\usepackage{etoolbox}
+
+\makeatletter
+% Protection contre un ancien fichier .aux génère par biblatex.
+% Le rapport utilise BibTeX/thebibliography; ces commandes peuvent rester
+% dans output.aux si la compilation precedente utilisait biblatex.
+\providecommand{\@gobblethree}[3]{}
+\providecommand{\@gobblefour}[4]{}
+\providecommand{\@gobblefive}[5]{}
+\providecommand{\abx@aux@refcontext}[1]{}
+\providecommand{\abx@aux@cite}[2]{}
+\providecommand{\abx@aux@segm}[3]{}
+\providecommand{\abx@aux@defaultrefcontext}[3]{}
+\providecommand{\abx@aux@defaultlabelprefix}[3]{}
+\providecommand{\abx@aux@read@bbl@mdfivesum}[1]{}
+\providecommand{\abx@aux@page}[2]{}
+\providecommand{\abx@aux@number}[2]{}
+\providecommand{\abx@aux@fnpage}[2]{}
+\providecommand{\abx@aux@backref}[4]{}
+\providecommand{\abx@aux@category}[2]{}
+\providecommand{\abx@aux@citecounter}[1]{}
+\providecommand{\abx@aux@sortscheme}[1]{}
+\providecommand{\abx@aux@refsection}[1]{}
+\providecommand{\abx@aux@refcontextdefaultsdone}{}
+\providecommand{\abx@aux@bbl@warn}[1]{}
+\providecommand{\abx@aux@bbl@data}[1]{}
+\providecommand{\abx@aux@labelnumber}[3]{}
+\providecommand{\abx@aux@labelalpha}[3]{}
+\providecommand{\abx@aux@field}[4]{}
+\providecommand{\abx@aux@name}[4]{}
+\providecommand{\abx@aux@list}[4]{}
+\providecommand{\abx@aux@data}[2]{}
+\providecommand{\abx@aux@nociteall}{}
+\makeatother
+
+\geometry{left=2.0cm,right=1.8cm,top=1.8cm,bottom=2.0cm,headheight=16pt}
+\setstretch{1.08}
+\setlength{\parskip}{0.06em}
+\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\floatsep}{5pt plus 2pt minus 2pt}
+\setlength{\intextsep}{5pt plus 2pt minus 2pt}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.0}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\pgfplotsset{compat=1.18}
+\makeatletter
+\IfFileExists{chapters/introduction.tex}{
+  \def\input@path{{chapters/}{figures/}{appendices/}}
+  \graphicspath{{assets/optimized/}{assets/}{assets/diagrams/}{assets/logos/}{assets/screenshots/}}
+}{
+  \def\input@path{{report/chapters/}{report/figures/}{report/appendices/}}
+  \graphicspath{{report/assets/optimized/}{report/assets/}{report/assets/diagrams/}{report/assets/logos/}{report/assets/screenshots/}}
+}
+\makeatother
+
+\newcommand{\bibliofile}{bibliography}
+\IfFileExists{bibliography.bib}{}{
+  \renewcommand{\bibliofile}{report/bibliography}
+}
+
+\newcommand{\sourceroot}{sources}
+\IfFileExists{sources/client/src/api/http.js}{}{
+  \renewcommand{\sourceroot}{report/sources}
+}
+\newcommand{\fileAuthStore}{\sourceroot/client/src/features/auth/auth.store.js}
+\newcommand{\fileApiHttp}{\sourceroot/client/src/api/http.js}
+\newcommand{\fileDashboardPage}{\sourceroot/client/src/pages/dashboard/DashboardPage.jsx}
+\newcommand{\fileSecurityConfig}{\sourceroot/spring/src/main/java/com/parcinformatique/app/config/SecurityConfig.java}
+\newcommand{\fileJwtProvider}{\sourceroot/spring/src/main/java/com/parcinformatique/app/security/JwtTokenProvider.java}
+\newcommand{\fileWebSocketConfig}{\sourceroot/spring/src/main/java/com/parcinformatique/app/websocket/WebSocketConfig.java}
+\newcommand{\fileSpringAppYml}{\sourceroot/spring/src/main/resources/application.yml}
+\newcommand{\fileDockerCompose}{\sourceroot/spring/docker-compose.yml}
+\newcommand{\fileDockerfile}{\sourceroot/spring/Dockerfile}
+\newcommand{\fileInitSql}{\sourceroot/spring/database/01-init.sql}
+\newcommand{\fileSeedSql}{\sourceroot/spring/database/02-seed-demo-data.sql}
+\newcommand{\filePostman}{\sourceroot/spring/postman/ParcFlow.postman_collection.json}
+\newcommand{\filePom}{\sourceroot/spring/pom.xml}
+\newcommand{\fileSeeder}{\sourceroot/spring/src/main/java/com/parcinformatique/app/config/DataSeeder.java}
+\newcommand{\fileSpringTest}{\sourceroot/spring/src/test/java/com/parcinformatique/app/ParcInformatiqueApplicationTests.java}
+
+\definecolor{brand}{HTML}{8E1F3F}
+\definecolor{branddark}{HTML}{4C1022}
+\definecolor{accent}{HTML}{0F766E}
+\definecolor{navy}{HTML}{16324F}
+\definecolor{softblue}{HTML}{EDF4FF}
+\definecolor{softgreen}{HTML}{EAF7F3}
+\definecolor{softrose}{HTML}{FFF1F4}
+\definecolor{textgray}{HTML}{5F6B7A}
+\definecolor{linegray}{HTML}{DCE3EC}
+\definecolor{golden}{HTML}{B8860B}
+\definecolor{lightbg}{HTML}{F8FAFC}
+\definecolor{codebg}{HTML}{F4F7FB}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=branddark,
+  citecolor=accent,
+  urlcolor=navy,
+  pdftitle={Rapport PFA - Plateforme Web Intelligente de Gestion du Parc Informatique},
+  pdfauthor={ANDA BTISSAM et LAZREK RAYAN}
+}
+
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,shapes.multipart,decorations.pathreplacing}
+
+\newcommand{\projecttitle}{Plateforme Web Intelligente de Gestion du Parc Informatique et des Affectations Matérielles}
+\newcommand{\projectshorttitle}{Gestion du parc informatique}
+\newcommand{\projecttype}{Projet de Fin d'Année (PFA)}
+\newcommand{\schoolname}{EMSI --- École Marocaine des Sciences de l'Ingénieur}
+\newcommand{\groupname}{HONORIS UNITED UNIVERSITIES}
+\newcommand{\studentone}{ANDA BTISSAM}
+\newcommand{\studenttwo}{LAZREK RAYAN}
+\newcommand{\supervisorname}{Orchi Houda}
+\newcommand{\departmentname}{Département Informatique}
+\newcommand{\filiere}{Ingénierie Informatique et Réseaux}
+\newcommand{\academicYear}{2025--2026}
+\newcommand{\reportdate}{Juin 2026}
+
+\titleformat{\chapter}[display]
+  {\bfseries\color{navy}}
+  {\filleft\Large\color{brand}\thechapter}
+  {0.4ex}
+  {\titlerule[0.8pt]\vspace{0.45ex}\filright\LARGE}
+  [\vspace{0.45ex}\titlerule]
+
+\titleformat{\section}
+  {\large\bfseries\color{branddark}}
+  {\thesection}{0.8em}{}
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{navy}}
+  {\thesubsection}{0.8em}{}
+
+\titlespacing*{\chapter}{0pt}{-1.0cm}{0.45cm}
+\titlespacing*{\section}{0pt}{0.55em}{0.20em}
+\titlespacing*{\subsection}{0pt}{0.35em}{0.12em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\small\itshape \projectshorttitle}
+\fancyfoot[L]{\small \schoolname}
+\fancyfoot[R]{\small Page \thepage/\pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\setlist[itemize]{leftmargin=0.85cm,noitemsep,topsep=2pt,parsep=0pt,partopsep=0pt}
+\setlist[enumerate]{leftmargin=0.85cm,noitemsep,topsep=2pt,parsep=0pt,partopsep=0pt}
+
+\captionsetup{font=small,skip=3pt}
+
+\lstdefinestyle{academiclst}{
+  basicstyle=\ttfamily\tiny,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  framerule=0.2pt,
+  rulecolor=\color{linegray},
+  breaklines=true,
+  breakatwhitespace=false,
+  postbreak=\mbox{\textcolor{textgray}{$\hookrightarrow$}\space},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2,
+  aboveskip=4pt,
+  belowskip=4pt,
+  numbers=none,
+  xleftmargin=0.4em,
+  framexleftmargin=0.3em
+}
+
+\tcbset{
+  colback=white,
+  colframe=brand!85!black,
+  boxrule=0.7pt,
+  arc=3mm
+}
+
+\newtcolorbox{keybox}[1][]{
+  enhanced,
+  colback=softblue,
+  colframe=brand,
+  title=#1,
+  fonttitle=\bfseries,
+  left=1.5mm,right=1.5mm,top=1mm,bottom=1mm
+}
+
+\newtcolorbox{methodbox}[1][]{
+  enhanced,
+  colback=softgreen,
+  colframe=accent!80!black,
+  title=#1,
+  fonttitle=\bfseries,
+  left=1.5mm,right=1.5mm,top=1mm,bottom=1mm
+}
+
+\newcommand{\sourceplaceholder}[1]{%
+  \begin{keybox}[Extrait technique]
+  Le code complet est disponible dans les sources du projet. Le rapport conserve ici l'explication technique afin de garder une mise en page claire, lisible et adaptée à l'impression.
+  \end{keybox}
+}
+
+\let\originalLstInputListing\lstinputlisting
+\renewcommand{\lstinputlisting}[2][]{\sourceplaceholder{#2}}
+
+\newenvironment{codeblock}[1][]{
+  \par
+  \captionsetup{type=figure}
+}{
+  \par
+}
+
+\newlength{\screenshotboxwidth}
+\newlength{\screenshotboxheight}
+\setlength{\screenshotboxwidth}{0.94\textwidth}
+\setlength{\screenshotboxheight}{0.405\textheight}
+
+\newcommand{\screenfigure}[3]{
+  \begin{figure}[htbp]
+    \centering
+    \begin{tcolorbox}[
+      enhanced,
+      width=\screenshotboxwidth,
+      height=\screenshotboxheight,
+      colback=white,
+      colframe=linegray,
+      boxrule=0.8pt,
+      arc=1mm,
+      left=1mm,right=1mm,top=1mm,bottom=1mm,
+      valign=center,
+      halign=center
+    ]
+      \includegraphics[width=\linewidth,height=0.370\textheight,keepaspectratio]{#1}
+    \end{tcolorbox}
+    \caption{#2}
+    \label{#3}
+  \end{figure}
+}
+
+\newcommand{\mobilefigure}[3]{
+  \begin{figure}[htbp]
+    \centering
+    \begin{tcolorbox}[
+      enhanced,
+      width=\screenshotboxwidth,
+      height=\screenshotboxheight,
+      colback=white,
+      colframe=linegray,
+      boxrule=0.8pt,
+      arc=1mm,
+      left=1mm,right=1mm,top=1mm,bottom=1mm,
+      valign=center,
+      halign=center
+    ]
+      \includegraphics[width=\linewidth,height=0.370\textheight,keepaspectratio]{#1}
+    \end{tcolorbox}
+    \caption{#2}
+    \label{#3}
+  \end{figure}
+}
+
+\newcommand{\imagefigure}[3]{
+  \begin{figure}[htbp]
+    \centering
+    \begin{tcolorbox}[
+      enhanced,
+      width=\screenshotboxwidth,
+      height=\screenshotboxheight,
+      colback=white,
+      colframe=linegray,
+      boxrule=0.8pt,
+      arc=1mm,
+      left=1mm,right=1mm,top=1mm,bottom=1mm,
+      valign=center,
+      halign=center
+    ]
+      \includegraphics[width=\linewidth,height=0.370\textheight,keepaspectratio]{#1}
+    \end{tcolorbox}
+    \caption{#2}
+    \label{#3}
+  \end{figure}
+}
+
+\newcommand{\frontmatterchapter}[1]{
+  \chapter*{#1}
+  \addcontentsline{toc}{chapter}{#1}
+}
+
+\newenvironment{frontmattertext}{
+  \begin{spacing}{1.12}
+  \normalsize
+  \setlength{\parskip}{0.45em}
+}{
+  \end{spacing}
+}
+
+\newcommand{\insertcoverpage}{
+  \begin{titlepage}
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[lightbg] (current page.south west) rectangle (current page.north east);
+      \fill[softblue] ([xshift=-1cm,yshift=-1cm]current page.north east) circle (5.5cm);
+      \fill[softrose] ([xshift=1cm,yshift=1cm]current page.south west) circle (5.2cm);
+      \draw[brand,line width=2pt] ([xshift=1.6cm,yshift=-1.5cm]current page.north west) -- ([xshift=1.6cm,yshift=1.5cm]current page.south west);
+      \draw[accent!70!black,line width=1pt] ([xshift=2.1cm,yshift=-1.5cm]current page.north west) -- ([xshift=2.1cm,yshift=1.5cm]current page.south west);
+      \draw[brand!55!white,line width=0.8pt] ([xshift=1.2cm,yshift=-1.2cm]current page.north east) -- ([xshift=-1.2cm,yshift=-1.2cm]current page.north west);
+      \draw[accent!40!white,line width=0.8pt] ([xshift=1.2cm,yshift=1.2cm]current page.south east) -- ([xshift=-1.2cm,yshift=1.2cm]current page.south west);
+    \end{tikzpicture}
+
+    \vspace*{0.45cm}
+    \begin{center}
+      \begin{minipage}{0.24\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{emsi-logo.png}
+      \end{minipage}
+      \hspace{1.2cm}
+      \begin{minipage}{0.36\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{honoris-logo.png}
+      \end{minipage}
+    \end{center}
+
+    \vspace{0.65cm}
+    \begin{center}
+      {\Large\bfseries\color{navy} \schoolname\par}
+      \vspace{0.2cm}
+      {\large\color{textgray}\groupname\par}
+      \vspace{0.45cm}
+      {\large\bfseries\color{branddark} \projecttype\par}
+      \vspace{0.25cm}
+      {\large\color{textgray} Filière : \filiere\par}
+      {\large\color{textgray} Année universitaire : \academicYear\par}
+    \end{center}
+
+    \vspace{0.55cm}
+    \begin{center}
+    \begin{tcolorbox}[
+      enhanced,
+      width=0.92\textwidth,
+      colback=white,
+      colframe=branddark,
+      boxrule=1.2pt,
+      arc=2mm,
+      left=5mm,right=5mm,top=5mm,bottom=5mm,
+      shadow={0.8mm}{-0.8mm}{0mm}{black!15}
+    ]
+      \begin{center}
+        {\LARGE\bfseries\color{branddark}\projecttitle\par}
+      \end{center}
+    \end{tcolorbox}
+    \end{center}
+
+    \vspace{0.55cm}
+
+    \begin{center}
+      \begin{tcolorbox}[
+        enhanced,
+        width=0.82\textwidth,
+        colback=white,
+        colframe=linegray,
+        boxrule=0.8pt,
+        arc=2mm,
+        left=4mm,right=4mm,top=3mm,bottom=3mm
+      ]
+        \renewcommand{\arraystretch}{1.25}
+        \begin{tabular}{@{}>{\bfseries\color{branddark}}r@{\hspace{0.45cm}}c@{\hspace{0.55cm}}l@{}}
+          Étudiants & : &
+          \begin{tabular}[t]{@{}l@{}}
+            \studentone \\
+            \studenttwo
+          \end{tabular} \\[0.18cm]
+          Encadrante & : & \supervisorname \\[0.18cm]
+          Département & : & \departmentname \\[0.18cm]
+          Date & : & \reportdate
+        \end{tabular}
+      \end{tcolorbox}
+    \end{center}
+
+    \vspace{0.35cm}
+    \begin{center}
+      {\small\color{textgray} Mémoire académique présenté dans le cadre de l'année universitaire \academicYear.}
+    \end{center}
+
+  \end{titlepage}
+}
+
+\begin{document}
+
+\selectlanguage{french}
+\insertcoverpage
+\pagenumbering{roman}
+
+\frontmatterchapter{Dédicaces}
+\begin{frontmattertext}
+Ce travail est dédié, avec une profonde gratitude, à nos familles pour leur soutien constant, leur patience et la confiance qu'elles nous ont accordée tout au long de notre parcours. Il est également dédié à toutes les personnes qui ont cru en la valeur de notre engagement académique et qui nous ont encouragés à viser un niveau d'exigence élevé dans la réalisation de ce projet.
+
+Nous dédions enfin ce mémoire à l'ensemble de la communauté pédagogique et technique qui considère l'innovation numérique non comme une simple tendance, mais comme un véritable levier de transformation organisationnelle et humaine.
+
+Nous le dédions aussi à celles et ceux qui nous ont appris la persévérance, la rigueur et le sens de la responsabilité. Leur présence, parfois silencieuse mais toujours déterminante, nous a accompagnés dans les moments de doute comme dans les étapes de réussite.
+
+Ce projet représente plus qu'un livrable technique. Il porte une part de notre parcours, de nos efforts partagés et de notre volonté de transformer des connaissances théoriques en une solution concrète, utile et défendable. À travers cette réalisation, nous exprimons notre reconnaissance envers toutes les personnes qui ont contribué à construire notre confiance et notre ambition.
+\end{frontmattertext}
+
+\frontmatterchapter{Remerciements}
+\begin{frontmattertext}
+Nous exprimons nos sincères remerciements à la direction de l'EMSI, à nos enseignants ainsi qu'aux intervenants ayant contribué à notre formation. Leurs enseignements, leurs retours méthodologiques et leur rigueur scientifique ont constitué un cadre de référence précieux pour la conduite de ce projet.
+
+Nous adressons une reconnaissance particulière à notre encadrante, \supervisorname, pour son accompagnement, ses remarques constructives et son exigence académique. Nous remercions également nos camarades, les membres de notre environnement professionnel et toutes les personnes qui ont participé, directement ou indirectement, à la réflexion fonctionnelle, à la validation technique et à l'amélioration progressive de la plateforme.
+
+Nous remercions également les personnes qui ont testé l'application, observé les parcours utilisateurs et signalé les points à améliorer. Leurs retours ont permis d'affiner l'ergonomie, de renforcer la cohérence des modules et de rendre la plateforme plus proche d'un usage réel.
+
+Enfin, nous tenons à souligner l'importance du cadre pédagogique qui nous a permis de combiner analyse des besoins, modélisation UML, développement full-stack, sécurité applicative, tests et documentation. Cette expérience nous a aidés à mieux comprendre les exigences d'un projet informatique complet, depuis la conception jusqu'à la préparation d'une soutenance structurée.
+\end{frontmattertext}
+
+\frontmatterchapter{Résumé}
+\begin{frontmattertext}
+Ce mémoire présente la conception et la réalisation d'une plateforme web intelligente dédiée à la gestion du parc informatique et des affectations matérielles. L'objectif principal du projet consiste à structurer, sécuriser et automatiser les opérations liées à l'inventaire, aux mouvements d'équipements, au suivi des maintenances, aux notifications et à la traçabilité des actions métiers.
+
+La solution proposée s'appuie sur une architecture moderne articulée autour d'un frontend React, d'un backend Spring Boot, d'une base de données PostgreSQL, d'API REST sécurisées par JWT, d'une communication temps réel par WebSocket ainsi que d'un déploiement conteneurisé via Docker. Le rapport détaille l'analyse des besoins, la modélisation UML, les choix architecturaux, la conception de la base de données, la mise en œuvre technique, les considérations UI/UX, les tests, le déploiement et les perspectives d'amélioration.
+
+Le résultat final met en évidence une plateforme cohérente, évolutive et orientée métier, capable d'améliorer la visibilité sur les actifs informatiques, de fiabiliser les processus d'affectation et de renforcer la qualité du pilotage opérationnel.
+
+\textbf{Mots-clés :} parc informatique, affectation matérielle, React, Spring Boot, PostgreSQL, JWT, WebSocket, Docker, UI/UX, reporting.
+
+\textbf{Apports principaux :} centralisation de l'inventaire, sécurisation des accès, suivi des demandes de matériel, pilotage des maintenances, notifications en temps réel et génération de rapports exploitables.
+\end{frontmattertext}
+
+\frontmatterchapter{Abstract}
+\selectlanguage{english}
+\begin{frontmattertext}
+This report presents the design and implementation of an intelligent web platform dedicated to IT asset management and equipment assignment workflows. The main objective is to structure, secure and streamline the operational processes related to inventory supervision, assignment lifecycle management, maintenance follow-up, notification handling and action traceability.
+
+The proposed solution relies on a modern technical stack composed of a React frontend, a Spring Boot backend, a PostgreSQL database, JWT-secured REST APIs, WebSocket-based real-time communication and Docker-enabled deployment. The report covers requirements analysis, UML modeling, system architecture, database design, implementation details, UI/UX choices, testing strategy, deployment workflow and future improvements.
+
+The final outcome highlights a scalable and business-oriented platform that improves operational visibility, strengthens governance over IT assets and supports a more reliable decision-making process within institutional environments.
+
+\textbf{Keywords:} IT asset management, equipment assignment, React, Spring Boot, PostgreSQL, JWT, WebSocket, Docker, UI/UX, reporting.
+
+\textbf{Main contributions:} centralized inventory, secure access control, equipment request tracking, maintenance monitoring, real-time notifications and usable report generation.
+\end{frontmattertext}
+\selectlanguage{french}
+
+\frontmatterchapter{Liste des abréviations}
+\begin{small}
+\setlength{\LTpre}{2pt}
+\setlength{\LTpost}{2pt}
+\begin{longtable}{p{0.20\textwidth}p{0.72\textwidth}}
+\toprule
+\textbf{Abréviation} & \textbf{Signification} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Abréviation} & \textbf{Signification} \\
+\midrule
+\endhead
+API & Application Programming Interface \\
+CRUD & Create, Read, Update, Delété \\
+CSS & Cascading Style Sheets \\
+DSI & Direction des Systèmes d'Information \\
+ERD & Entity Relationship Diagram \\
+H2 & Système de base de données en mémoire utilisé pour les tests \\
+HTML & HyperText Markup Language \\
+HTTP & HyperText Transfer Protocol \\
+JWT & JSON Web Token \\
+JPA & Jakarta Persistence API \\
+MCD & Modèle Conceptuel de Données \\
+MLD & Modèle Logique de Données \\
+ORM & Object Relational Mapping \\
+PFA & Projet de Fin d'Année \\
+PWA & Progressive Web App \\
+RBAC & Role Based Accèss Control \\
+REST & Representational State Transfer \\
+SGBD & Système de Gestion de Base de Données \\
+SLA & Service Level Agreement \\
+SQL & Structured Query Language \\
+STOMP & Simple Text Oriented Messaging Protocol \\
+UML & Unified Modeling Language \\
+UI & User Interface \\
+UX & User Experience \\
+WS & WebSocket \\
+\bottomrule
+\end{longtable}
+\end{small}
+
+\begingroup
+\small
+\setstretch{0.96}
+\setlength{\parskip}{0pt}
+\tableofcontents
+\listoffigures
+\listoftables
+\endgroup
+
+\clearpage
+\pagenumbering{arabic}
+
+\input{introduction.tex}
+\input{ch2_analysis.tex}
+\input{ch3_uml.tex}
+\input{ch4_architecture.tex}
+\input{ch5_database.tex}
+\input{ch6_implementation.tex}
+\input{ch7_uiux.tex}
+\input{ch8_tests.tex}
+\input{ch9_deployment.tex}
+\input{ch10_results.tex}
+\input{conclusion.tex}
+
+\bibliographystyle{ieeetr}
+\bibliography{\bibliofile}
+
+\appendix
+\input{annexes.tex}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
